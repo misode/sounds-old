@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Sounds</title>
+</head>
+<body>
+
+  <button id="play-button">Play</button>
+  <button id="stop-button">Stop All</button>
+
+  <br>
+
+  <label for="loop">Loop</label>
+  <input id="loop" type="checkbox">
+
+  <br>
+
+  <label for="pitch">Pitch: 1</label>
+  <input id="pitch" type="range" min="0.5" max="2" step="0.1">
+
+  <br>
+
+  <input id="sound" type="text" list="sound-list">
+  <datalist id="sound-list"></datalist>
+
+  <script src="./bundle.js"></script>
+</body>
+</html>
