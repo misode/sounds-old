@@ -8,8 +8,11 @@ export class SoundConfig {
   constructor(private el: Element, sound: string) {
     el.append($('button').class('play').text('Play').icon('play')
       .onClick(() => {
-        this.howl?.stop()
-        this.howl?.play()
+        if (this.howl?.playing()) {
+          this.howl.stop()
+        } else {
+          this.howl?.play()
+        }
       }).get())
 
     el.append($('input').class('sound').attr('type', 'text')
