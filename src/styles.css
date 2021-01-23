@@ -2,13 +2,28 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+
   --background1: #121113;
   --background2: #1b1a1b;
+  --background3: #202020;
+
   --accent1: #451475;
   --accent2: #39155e;
   --accent3: #53396d;
   --accent4: #443058;
   --accent5: #c5a5e6;
+
+  --invalid-text: #fd7951;
+  --invalid1: #403d44;
+  --invalid2: #37353a;
+  --invalid3: #696270;
+  --invalid4: #514d55;
+  --invalid5: #d3cdd8;
+
+  --playing1: #6a08a3;
+  --playing2: #d1a5e6;
+
+  --playing-gradient: linear-gradient(110deg, var(--playing1), var(--playing1) 45%, var(--playing2) 47%, var(--playing2) 53%, var(--playing1) 55%)
 }
 
 body {
@@ -159,6 +174,47 @@ input[type=range]:focus::-moz-range-track {
   padding: 10px;
   background-color: var(--background2);
   border-radius: 5px;
+}
+
+.sound-config.playing {
+  background-color: var(--background3);
+}
+
+.sound-config.playing .play {
+  background-image: var(--playing-gradient);
+  background-size: 300%;
+  background-position: right;
+  animation: playing 1s infinite;
+}
+
+@keyframes playing {
+  0% {
+    background-position: left;
+  }
+  100% {
+    background-position: right;
+  }
+}
+
+.sound-config.invalid * {
+  --accent1: var(--invalid1);
+  --accent2: var(--invalid2);
+  --accent3: var(--invalid3);
+  --accent4: var(--invalid4);
+  --accent5: var(--invalid5);
+}
+
+.sound-config.invalid .play {
+  cursor: unset;
+}
+.sound-config.invalid .play:focus,
+.sound-config.invalid .play:hover {
+  background-color: var(--accent2);
+  pointer-events: none;
+  outline: none !important;
+}
+.sound-config.invalid .sound {
+  color: var(--invalid-text);
 }
 
 @media screen and (max-width: 640px) {

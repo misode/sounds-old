@@ -6,11 +6,17 @@ export class SoundConfig {
   private howl: Howl | null
 
   constructor(private el: Element, sound: string) {
-    el.append($('button').class('play').text('Play').icon('play').onClick(() => this.howl?.play()).get())
+    el.append($('button').class('play').text('Play').icon('play')
+      .onClick(() => {
+        this.howl?.stop()
+        this.howl?.play()
+      }).get())
 
     el.append($('input').class('sound').attr('type', 'text')
-      .onChange(v => this.howl = this.createHowl(v))
-      .attr('list', 'sound-list').attr('spellcheck', 'false').value(sound).get())
+      .onChange(v => {
+        this.howl = this.createHowl(v)
+        this.el.classList.toggle('invalid', this.howl === null)
+      }).attr('list', 'sound-list').attr('spellcheck', 'false').value(sound).get())
 
     el.append($('label').class('pitch-label').text('Pitch: 1').get())
     el.append($('input').class('pitch').attr('type', 'range')
@@ -27,6 +33,7 @@ export class SoundConfig {
       }).attr('min', '0').attr('max', '1').attr('step', '0.01').value(1).get())
 
     this.howl = this.createHowl(sound)
+    this.el.classList.toggle('invalid', this.howl === null)
   }
 
   private get(c: string) {
@@ -49,11 +56,23 @@ export class SoundConfig {
     const hash = assetObjects[`minecraft/sounds/${soundPath}.ogg`].hash
     const url = getResourceUrl(hash)
 
-    return new Howl({
+    const howl = new Howl({
       src: [url],
       format: ['ogg'],
       volume: this.get('volume') as number,
       rate: this.get('pitch') as number
     })
+
+    howl.on('play', () => {
+      this.el.classList.add('playing')
+    })
+    howl.on('end', () => {
+      this.el.classList.remove('playing')
+    })
+    howl.on('stop', () => {
+      this.el.classList.remove('playing')
+    })
+
+    return howl
   }
 }
