@@ -1,4 +1,5 @@
 import { Howler } from 'howler';
+import { URLSearchParams } from 'url';
 import $ from './Element'
 import { SoundConfig } from './SoundConfig';
 import "./styles.css";
@@ -39,12 +40,19 @@ async function main() {
     (Howler as any).stop()
   })
 
-  addSoundConfig('entity.creeper.primed')
+  const params: { [key: string]: string } = location.search.slice(1).split('&')
+    .map(p => p.split('=')).reduce((acc, p) => ({...acc, [p[0]]: p[1]}), {})
+
+  if (params.sound) {
+    addSoundConfig(params.sound,
+      Math.max(0.5, Math.min(2, parseFloat(params.pitch ?? '1'))),
+      Math.max(0, Math.min(1, parseFloat(params.volume ?? '1'))))
+  }
 }
 
-function addSoundConfig(sound: string) {
+function addSoundConfig(sound: string, pitch?: number, volume?: number) {
   const soundEl = $('div').class('sound-config').get()
-  const soundConfig = new SoundConfig(soundEl, sound)
+  const soundConfig = new SoundConfig(soundEl, sound, pitch, volume)
   soundConfigsEl.prepend(soundEl)
   soundSearchEl.value = ''
   sounds.push(soundConfig)

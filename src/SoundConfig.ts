@@ -5,7 +5,7 @@ import $ from './Element'
 export class SoundConfig {
   private howl: Howl | null
 
-  constructor(private el: Element, sound: string) {
+  constructor(private el: Element, sound: string, pitch = 1, volume = 1) {
     el.append($('button').class('play').text('Play').icon('play')
       .onClick(() => {
         if (this.howl?.playing()) {
@@ -21,19 +21,19 @@ export class SoundConfig {
         this.el.classList.toggle('invalid', this.howl === null)
       }).attr('list', 'sound-list').attr('spellcheck', 'false').value(sound).get())
 
-    el.append($('label').class('pitch-label').text('Pitch: 1').get())
+    el.append($('label').class('pitch-label').text(`Pitch: ${pitch}`).get())
     el.append($('input').class('pitch').attr('type', 'range')
       .onChange(v => {
         this.howl?.rate(v)
         this.el.querySelector('.pitch-label')!.textContent = `Pitch: ${v}`
-      }).attr('min', '0.5').attr('max', '2').attr('step', '0.01').value(1).get())
+      }).attr('min', '0.5').attr('max', '2').attr('step', '0.01').value(pitch).get())
 
-    el.append($('label').class('volume-label').text('Volume: 1').get())
+    el.append($('label').class('volume-label').text(`Volume: ${volume}`).get())
     el.append($('input').class('volume').attr('type', 'range')
       .onChange(v => {
         this.howl?.volume(v)
         this.el.querySelector('.volume-label')!.textContent = `Volume: ${v}`
-      }).attr('min', '0').attr('max', '1').attr('step', '0.01').value(1).get())
+      }).attr('min', '0').attr('max', '1').attr('step', '0.01').value(volume).get())
 
     this.howl = this.createHowl(sound)
     this.el.classList.toggle('invalid', this.howl === null)
