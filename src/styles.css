@@ -12,6 +12,7 @@
   --accent3: #53396d;
   --accent4: #443058;
   --accent5: #c5a5e6;
+  --accent6: #8769a3;
 
   --invalid-text: #fd7951;
   --invalid1: #403d44;
@@ -79,6 +80,10 @@ input[type=text] {
 
 input[type=text]:focus {
   background-color: var(--accent3);
+}
+
+input[type=text]::placeholder {
+  color: var(--accent6);
 }
 
 /* Range inputs */
