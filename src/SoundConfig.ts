@@ -3,23 +3,29 @@ import { assetObjects, soundEvents, getResourceUrl } from '.'
 import $ from './Element'
 
 export class SoundConfig {
-  private howl: Howl | null = null
-  public pitch: number = 1
-  public volume: number = 1
-  constructor(public el: Element, sound: string = '') {
-    el.append($('button').text('Play').icon('play').onClick(() => this.onPlay()).get())
+  private howl: Howl | null
 
-    el.append($('input').class('sound').attr('list', 'sound-list').set('value', sound).get())
+  constructor(private el: Element, sound: string) {
+    el.append($('button').text('Play').icon('play').onClick(() => this.howl?.play()).get())
+
+    el.append($('input').class('sound').attr('type', 'text')
+      .onChange(v => this.howl = this.createHowl(v)).attr('list', 'sound-list').value(sound).get())
 
     el.append($('label').class('pitch-label').text('Pitch: 1').get())
     el.append($('input').class('pitch').attr('type', 'range')
-      .onChange(v => this.el.querySelector('.pitch-label')!.textContent = `Pitch: ${v}`)
-      .attr('min', '0.5').attr('max', '2').attr('step', '0.01').set('value', 1).get())
+      .onChange(v => {
+        this.howl?.rate(v)
+        this.el.querySelector('.pitch-label')!.textContent = `Pitch: ${v}`
+      }).attr('min', '0.5').attr('max', '2').attr('step', '0.01').value(1).get())
 
     el.append($('label').class('volume-label').text('Volume: 1').get())
     el.append($('input').class('volume').attr('type', 'range')
-      .onChange(v => this.el.querySelector('.volume-label')!.textContent = `Volume: ${v}`)
-      .attr('min', '0').attr('max', '1').attr('step', '0.1').set('value', 1).get())
+      .onChange(v => {
+        this.howl?.volume(v)
+        this.el.querySelector('.volume-label')!.textContent = `Volume: ${v}`
+      }).attr('min', '0').attr('max', '1').attr('step', '0.1').value(1).get())
+
+    this.howl = this.createHowl(sound)
   }
 
   private get(c: string) {
@@ -33,21 +39,18 @@ export class SoundConfig {
     }
   }
 
-  private onPlay() {
-    const soundEvent = soundEvents[this.get('sound') as string]
-    if (!soundEvent) return
-    const sound = soundEvent.sounds[0]
-    const soundPath = typeof sound === 'string' ? sound : sound.name
+  private createHowl(sound: string) {
+    const soundEvent = soundEvents[sound]
+    if (!soundEvent) return null
+
+    const soundEntry = soundEvent.sounds[0]
+    const soundPath = typeof soundEntry === 'string' ? soundEntry : soundEntry.name
     const hash = assetObjects[`minecraft/sounds/${soundPath}.ogg`].hash
     const url = getResourceUrl(hash)
 
-    if (this.howl) {
-      this.howl.unload()
-    }
-    this.howl = new Howl({
+    return new Howl({
       src: [url],
       format: ['ogg'],
-      autoplay: true, 
       volume: this.get('volume') as number,
       rate: this.get('pitch') as number
     })
