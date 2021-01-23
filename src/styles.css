@@ -30,6 +30,7 @@
 body {
   background-color: var(--background1);
   font-family: Arial;
+  height: 100vh;
 }
 
 /* Labels */
@@ -58,6 +59,7 @@ button {
 button:focus,
 button:hover {
   background-color: var(--accent1);
+  outline: none !important;
 }
 
 button > svg {
@@ -148,7 +150,7 @@ input[type=range]:focus::-moz-range-track {
   background: var(--accent3);
 }
 
-.main-controls {
+#main-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -159,7 +161,7 @@ input[type=range]:focus::-moz-range-track {
   width: 100%;
 }
 
-.main-controls > * {
+#main-controls > * {
   margin: 0 4px;
 }
 
@@ -173,7 +175,7 @@ input[type=range]:focus::-moz-range-track {
 
 .sound-config {
   display: grid;
-  grid-template-columns: min-content 2fr min-content 1fr min-content 1fr;
+  grid-template-columns: min-content 2fr min-content 1fr min-content 1fr min-content;
   align-items: center;
   gap: 12px 8px;
   padding: 10px;
@@ -190,6 +192,24 @@ input[type=range]:focus::-moz-range-track {
   background-size: 300%;
   background-position: right;
   animation: playing 1s infinite;
+}
+
+.sound-config .copy[data-command] {
+  position: relative;
+  background-color: var(--playing1);
+}
+
+.sound-config .copy[data-command]::after {
+  content: attr(data-command);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: var(--background3);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px var(--background1);
+  cursor: initial;
 }
 
 @keyframes playing {
@@ -232,10 +252,10 @@ input[type=range]:focus::-moz-range-track {
   }
 
   .sound-config {
-    grid-template-columns: min-content min-content 1fr min-content 1fr;
+    grid-template-columns: min-content min-content 1fr min-content 1fr min-content;
     grid-template-areas:
-      "play sound sound sound sound"
-      "pitch-label pitch-label pitch volume-label volume";
+      "play sound sound sound sound copy"
+      "pitch-label pitch-label pitch volume-label volume volume";
   }
   .sound-config .play { grid-area: play; }
   .sound-config .sound { grid-area: sound; }
@@ -243,4 +263,5 @@ input[type=range]:focus::-moz-range-track {
   .sound-config .pitch { grid-area: pitch; }
   .sound-config .volume-label { grid-area: volume-label; }
   .sound-config .volume { grid-area: volume; }
+  .sound-config .copy { grid-area: copy; }
 }

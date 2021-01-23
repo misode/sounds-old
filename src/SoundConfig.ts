@@ -1,6 +1,7 @@
 import { Howl } from 'howler'
 import { assetObjects, soundEvents, getResourceUrl } from '.'
 import $ from './Element'
+import Octicon from './Octicon'
 
 export class SoundConfig {
   private howl: Howl | null
@@ -34,6 +35,23 @@ export class SoundConfig {
         this.howl?.volume(v)
         this.el.querySelector('.volume-label')!.textContent = `Volume: ${v}`
       }).attr('min', '0').attr('max', '1').attr('step', '0.01').value(volume).get())
+
+    el.append($('button').class('copy').text('Copy').icon('terminal')
+      .onClick(el => {
+        const command = `/playsound minecraft:${this.get('sound')} master @s ~ ~ ~ ${this.get('pitch')} ${this.get('volume')}`
+        el.setAttribute('data-command', command)
+        const commandEl = document.createElement('input')
+        el.append(commandEl)
+        commandEl.value = command
+        commandEl.select()
+        document.execCommand('copy')
+        commandEl.remove()
+        el.querySelector('svg')!.outerHTML = Octicon.check
+        document.body.addEventListener('click', () => {
+          el.removeAttribute('data-command')
+          el.querySelector('svg')!.outerHTML = Octicon.terminal
+        }, { capture: true, once: true })
+      }).get())
 
     this.howl = this.createHowl(sound)
     this.el.classList.toggle('invalid', this.howl === null)

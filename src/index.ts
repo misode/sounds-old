@@ -1,11 +1,9 @@
 import { Howler } from 'howler';
-import { URLSearchParams } from 'url';
 import $ from './Element'
 import { SoundConfig } from './SoundConfig';
 import "./styles.css";
 
-const stopButtonEl = document.getElementById('stop-button') as HTMLButtonElement
-const soundSearchEl = document.getElementById('sound-search') as HTMLInputElement
+const mainControlsEl = document.getElementById('main-controls') as HTMLDivElement
 const soundConfigsEl = document.getElementById('sound-configs') as HTMLDivElement
 const soundsListEl = document.getElementById('sound-list') as HTMLDataListElement
 
@@ -32,13 +30,11 @@ async function main() {
   soundEvents = await (await getResource(assetObjects['minecraft/sounds.json'].hash)).json()
   soundsListEl.innerHTML = Object.keys(soundEvents).map(s => `<option>${s}</option>`).join('')
 
-  soundSearchEl.addEventListener('change', () => {
-    addSoundConfig(soundSearchEl.value)
-  })
+  mainControlsEl.append($('input').class('sound-search').onChange(v => addSoundConfig(v))
+    .attr('type', 'text').attr('list', 'sound-list').attr('placeholder', 'Search sounds').get())
 
-  stopButtonEl.addEventListener('click', () => {
-    (Howler as any).stop()
-  })
+  mainControlsEl.append($('button').onClick(() => (Howler as any).stop())
+    .text('Stop all').icon('mute').get())
 
   const params: { [key: string]: string } = location.search.slice(1).split('&')
     .map(p => p.split('=')).reduce((acc, p) => ({...acc, [p[0]]: p[1]}), {})
@@ -54,7 +50,7 @@ function addSoundConfig(sound: string, pitch?: number, volume?: number) {
   const soundEl = $('div').class('sound-config').get()
   const soundConfig = new SoundConfig(soundEl, sound, pitch, volume)
   soundConfigsEl.prepend(soundEl)
-  soundSearchEl.value = ''
+  ;(document.querySelector('.sound-search') as any).value = ''
   sounds.push(soundConfig)
 }
 

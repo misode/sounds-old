@@ -21,8 +21,8 @@ export default (type: string) => {
       el.setAttribute(k, v)
       return this
     },
-    onClick(fn: (evt: MouseEvent) => void) {
-      el.addEventListener('click', fn)
+    onClick(fn: (el: HTMLElement) => void) {
+      el.addEventListener('click', () => fn(el))
       return this
     },
     onChange(fn: (value: any) => void) {
