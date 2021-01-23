@@ -1,0 +1,185 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  --background1: #121113;
+  --background2: #1b1a1b;
+  --accent1: #451475;
+  --accent2: #39155e;
+  --accent3: #53396d;
+  --accent4: #443058;
+  --accent5: #c5a5e6;
+}
+
+body {
+  background-color: var(--background1);
+  font-family: Arial;
+}
+
+/* Labels */
+
+label {
+  white-space: nowrap;
+  color: var(--accent5);
+}
+
+/* Buttons */
+
+button {
+  background-color: var(--accent2);
+  color: var(--accent5);
+  fill: var(--accent5);
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+button:focus,
+button:hover {
+  background-color: var(--accent1);
+}
+
+button > svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+/* Text inputs */
+
+input[type=text] {
+  width: 100%;
+  padding: 5px;
+  color: var(--accent5);
+  background-color: var(--accent4);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+input[type=text]:focus {
+  background-color: var(--accent3);
+}
+
+/* Range inputs */
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--accent5);
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+input[type=range]::-moz-range-thumb {
+  border: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--accent5);
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: var(--accent4);
+  border-radius: 2px;
+  border: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: var(--accent3);
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: var(--accent4);
+  border-radius: 2px;
+  border: none;
+}
+
+input[type=range]:focus::-moz-range-track {
+  background: var(--accent3);
+}
+
+.main-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  box-shadow: 0 0 6px var(--background1);
+  background-color: var(--background1);
+  position: fixed;
+  width: 100%;
+}
+
+.main-controls > * {
+  margin: 0 4px;
+}
+
+#sound-configs {
+  padding: 12px;
+  padding-top: 60px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.sound-config {
+  display: grid;
+  grid-template-columns: min-content 2fr min-content 1fr min-content 1fr;
+  align-items: center;
+  gap: 12px 8px;
+  padding: 10px;
+  background-color: var(--background2);
+  border-radius: 5px;
+}
+
+@media screen and (max-width: 640px) {
+  button {
+    padding: 5px 10px;
+  }
+
+  button > svg {
+    display: none;
+  }
+
+  .sound-config {
+    grid-template-columns: min-content min-content 1fr min-content 1fr;
+    grid-template-areas:
+      "play sound sound sound sound"
+      "pitch-label pitch-label pitch volume-label volume";
+  }
+  .sound-config .play { grid-area: play; }
+  .sound-config .sound { grid-area: sound; }
+  .sound-config .pitch-label { grid-area: pitch-label; }
+  .sound-config .pitch { grid-area: pitch; }
+  .sound-config .volume-label { grid-area: volume-label; }
+  .sound-config .volume { grid-area: volume; }
+}

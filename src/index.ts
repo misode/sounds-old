@@ -32,16 +32,22 @@ async function main() {
   soundsListEl.innerHTML = Object.keys(soundEvents).map(s => `<option>${s}</option>`).join('')
 
   soundSearchEl.addEventListener('change', () => {
-    const soundEl = $('div').get()
-    const soundConfig = new SoundConfig(soundEl, soundSearchEl.value)
-    soundConfigsEl.prepend(soundEl)
-    soundSearchEl.value = ''
-    sounds.push(soundConfig)
+    addSoundConfig(soundSearchEl.value)
   })
 
   stopButtonEl.addEventListener('click', () => {
     (Howler as any).stop()
   })
+
+  addSoundConfig('entity.creeper.primed')
+}
+
+function addSoundConfig(sound: string) {
+  const soundEl = $('div').class('sound-config').get()
+  const soundConfig = new SoundConfig(soundEl, sound)
+  soundConfigsEl.prepend(soundEl)
+  soundSearchEl.value = ''
+  sounds.push(soundConfig)
 }
 
 export async function getJson(url: string) {
