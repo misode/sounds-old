@@ -28,7 +28,9 @@ async function main() {
   const version = await getJson(manifest.versions.find((v: any) => v.id === manifest.latest.snapshot).url)
   assetObjects = (await getJson(version.assetIndex.url)).objects
   soundEvents = await (await getResource(assetObjects['minecraft/sounds.json'].hash)).json()
-  soundsListEl.innerHTML = Object.keys(soundEvents).map(s => `<option>${s}</option>`).join('')
+  soundsListEl.innerHTML = Object.keys(soundEvents)
+    .filter(s => soundEvents[s].sounds.length > 0)
+    .map(s => `<option>${s}</option>`).join('')
 
   mainControlsEl.append($('input').class('sound-search').onChange(v => addSoundConfig(v))
     .attr('type', 'text').attr('list', 'sound-list').attr('placeholder', 'Search sounds').get())
