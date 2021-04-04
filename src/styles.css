@@ -221,6 +221,7 @@ input[type=range]:focus::-moz-range-track {
   }
 }
 
+.sound-config.loading .play,
 .sound-config.invalid * {
   --accent1: var(--invalid1);
   --accent2: var(--invalid2);
@@ -229,13 +230,13 @@ input[type=range]:focus::-moz-range-track {
   --accent5: var(--invalid5);
 }
 
+.sound-config.loading .play,
 .sound-config.invalid button {
-  cursor: unset;
+  pointer-events: none;
 }
 .sound-config.invalid button:focus,
 .sound-config.invalid button:hover {
   background-color: var(--accent2);
-  pointer-events: none;
   outline: none !important;
 }
 .sound-config.invalid .sound {

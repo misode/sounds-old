@@ -3,36 +3,38 @@ import { assetObjects, soundEvents, getResourceUrl } from '.'
 import $ from './Element'
 import Octicon from './Octicon'
 
+type SoundStatus = 'loading' | 'loaded' | 'playing'
+
 export class SoundConfig {
-  private howl: Howl | null
+  private howls: Howl[] = []
+  private status: SoundStatus = 'loading'
 
   constructor(private el: Element, sound: string, pitch = 1, volume = 1) {
     el.append($('button').class('play').text('Play').icon('play')
       .onClick(() => {
-        if (this.howl?.playing()) {
-          this.howl.stop()
-        } else {
-          this.howl?.play()
+        if (this.status === 'loaded') {
+          this.updateStatus('playing')
+        } else if (this.status === 'playing') {
+          this.updateStatus('loaded')
         }
       }).get())
 
     el.append($('input').class('sound').attr('type', 'text')
       .onChange(v => {
-        this.howl = this.createHowl(v)
-        this.el.classList.toggle('invalid', this.howl === null)
+        this.createHowls(v)
       }).attr('list', 'sound-list').attr('spellcheck', 'false').value(sound).get())
 
     el.append($('label').class('pitch-label').text(`Pitch: ${pitch}`).get())
     el.append($('input').class('pitch').attr('type', 'range')
       .onChange(v => {
-        this.howl?.rate(v)
+        this.howls.forEach(h => h.rate(v))
         this.el.querySelector('.pitch-label')!.textContent = `Pitch: ${v}`
       }).attr('min', '0.5').attr('max', '2').attr('step', '0.01').value(pitch).get())
 
     el.append($('label').class('volume-label').text(`Volume: ${volume}`).get())
     el.append($('input').class('volume').attr('type', 'range')
       .onChange(v => {
-        this.howl?.volume(v)
+        this.howls.forEach(h => h.volume(v))
         this.el.querySelector('.volume-label')!.textContent = `Volume: ${v}`
       }).attr('min', '0').attr('max', '1').attr('step', '0.01').value(volume).get())
 
@@ -53,8 +55,21 @@ export class SoundConfig {
         }, { capture: true, once: true })
       }).get())
 
-    this.howl = this.createHowl(sound)
-    this.el.classList.toggle('invalid', this.howl === null)
+    this.createHowls(sound)
+  }
+
+  private updateStatus(status: SoundStatus) {
+    this.status = status
+    this.el.classList.toggle('invalid', this.howls.length === 0)
+    this.el.classList.toggle('playing', this.status === 'playing')
+    this.el.classList.toggle('loading', this.status === 'loading')
+    if (this.status === 'playing') {
+      const howl = Math.floor(Math.random() * this.howls.length)
+      console.log('play', howl)
+      this.howls[howl].play()
+    } else {
+      this.howls.forEach(h => h.stop())
+    }
   }
 
   private get(c: string) {
@@ -68,32 +83,35 @@ export class SoundConfig {
     }
   }
 
-  private createHowl(sound: string) {
-    const soundEvent = soundEvents[sound]
-    if (!soundEvent) return null
+  private createHowls(sound: string) {
+    const soundEvent = soundEvents[sound] || { sounds: [] }
 
-    const soundEntry = soundEvent.sounds[0]
-    const soundPath = typeof soundEntry === 'string' ? soundEntry : soundEntry.name
-    const hash = assetObjects[`minecraft/sounds/${soundPath}.ogg`].hash
-    const url = getResourceUrl(hash)
+    this.howls = []
+    for (const soundEntry of soundEvent.sounds) {
+      const soundPath = typeof soundEntry === 'string' ? soundEntry : soundEntry.name
+      const hash = assetObjects[`minecraft/sounds/${soundPath}.ogg`].hash
+      const url = getResourceUrl(hash)
 
-    const howl = new Howl({
-      src: [url],
-      format: ['ogg'],
-      volume: this.get('volume') as number,
-      rate: this.get('pitch') as number
-    })
-
-    howl.on('play', () => {
-      this.el.classList.add('playing')
-    })
-    howl.on('end', () => {
-      this.el.classList.remove('playing')
-    })
-    howl.on('stop', () => {
-      this.el.classList.remove('playing')
-    })
-
-    return howl
+      const howl = new Howl({
+        src: [url],
+        format: ['ogg'],
+        volume: this.get('volume') as number,
+        rate: this.get('pitch') as number,
+      })
+      howl.on('end', () => {
+        console.log("stop!")
+        if (this.status === 'playing') {
+          this.updateStatus('loaded')
+        }
+      })
+      howl.on('load', () => {
+        if (this.status === 'loading' &&
+            this.howls.every(h => h.state() === 'loaded')) {
+          this.updateStatus('loaded')
+        }
+      })
+      this.howls.push(howl)
+    }
+    this.updateStatus('loading')
   }
 }
