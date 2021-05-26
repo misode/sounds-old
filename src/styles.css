@@ -68,6 +68,17 @@ button > svg {
   margin: 1.5px 4px 1.5px 0;
 }
 
+/* Select inputs */
+select {
+  height: 34px;
+  padding: 4px;
+  color: var(--accent5);
+  background: var(--accent4);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
 /* Text inputs */
 
 input[type=text] {
@@ -233,7 +244,7 @@ input[type=range]:focus::-moz-range-track {
 }
 
 .sound-config.loading .play,
-.sound-config.invalid * {
+.sound-config.invalid *:not(.remove) {
   --accent1: var(--invalid1);
   --accent2: var(--invalid2);
   --accent3: var(--invalid3);
@@ -242,11 +253,11 @@ input[type=range]:focus::-moz-range-track {
 }
 
 .sound-config.loading .play,
-.sound-config.invalid button {
+.sound-config.invalid button:not(.remove) {
   pointer-events: none;
 }
-.sound-config.invalid button:focus,
-.sound-config.invalid button:hover {
+.sound-config.invalid button:not(.remove):focus,
+.sound-config.invalid button:not(.remove):hover {
   background-color: var(--accent2);
   outline: none !important;
 }
