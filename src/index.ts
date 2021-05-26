@@ -19,7 +19,8 @@ export let soundEvents: {
   }
 } = {}
 
-export const sounds: SoundConfig[] = []
+const sounds: SoundConfig[] = []
+let soundTimeouts: any[] = []
 
 main()
 
@@ -35,8 +36,16 @@ async function main() {
   mainControlsEl.append($('input').class('sound-search').onChange(v => addSoundConfig(v))
     .attr('type', 'text').attr('list', 'sound-list').attr('placeholder', 'Search sounds').get())
 
-  mainControlsEl.append($('button').onClick(() => (Howler as any).stop())
-    .text('Stop all').icon('mute').get())
+  mainControlsEl.append($('button').text('Play all').icon('play')
+    .onClick(() => {
+      stopAll()
+      sounds.forEach(s => {
+        soundTimeouts.push(setTimeout(() => s.play(), 50 * s.getOffset()))
+      })
+    }).get())
+
+  mainControlsEl.append($('button').text('Stop all').icon('mute')
+    .onClick(stopAll).get())
 
   const params: { [key: string]: string } = location.search.slice(1).split('&')
     .map(p => p.split('=')).reduce((acc, p) => ({...acc, [p[0]]: p[1]}), {})
@@ -54,6 +63,20 @@ function addSoundConfig(sound: string, pitch?: number, volume?: number) {
   soundConfigsEl.prepend(soundEl)
   ;(document.querySelector('.sound-search') as any).value = ''
   sounds.push(soundConfig)
+}
+
+export function removeSoundConfig(config: SoundConfig) {
+  const soundIndex = sounds.indexOf(config)
+  if (soundIndex >= 0) {
+    sounds.splice(soundIndex, 1)[0].el.remove()
+  }
+}
+
+function stopAll() {
+  soundTimeouts.forEach(t => clearTimeout(t))
+  soundTimeouts = []
+  sounds.forEach(s => s.stop())
+  ;(Howler as any).stop()
 }
 
 export async function getJson(url: string) {
@@ -81,4 +104,10 @@ export async function getCachedData(url: string): Promise<Response> {
   const fetchResponse = await fetch(url)
   await cache.put(url, fetchResponse.clone())
   return fetchResponse
+}
+
+export function hexId(length = 12) {
+  var arr = new Uint8Array(length / 2)
+  window.crypto.getRandomValues(arr)
+  return Array.from(arr, dec => ('0' + dec.toString(16)).substr(-2)).join('')
 }

@@ -1,5 +1,5 @@
 import { Howl } from 'howler'
-import { assetObjects, soundEvents, getResourceUrl } from '.'
+import { assetObjects, soundEvents, getResourceUrl, removeSoundConfig } from '.'
 import $ from './Element'
 import Octicon from './Octicon'
 
@@ -9,7 +9,7 @@ export class SoundConfig {
   private howls: Howl[] = []
   private status: SoundStatus = 'loading'
 
-  constructor(private el: Element, sound: string, pitch = 1, volume = 1) {
+  constructor(public el: Element, sound: string, pitch = 1, volume = 1) {
     el.append($('button').class('play').text('Play').icon('play')
       .onClick(() => {
         if (this.status === 'loaded') {
@@ -23,6 +23,10 @@ export class SoundConfig {
       .onChange(v => {
         this.createHowls(v)
       }).attr('list', 'sound-list').attr('spellcheck', 'false').value(sound).get())
+
+    el.append($('label').class('offset-label').text('Offset: ').get())
+    el.append($('input').class('offset').attr('type', 'number')
+      .attr('min', '0').value(0).get())
 
     el.append($('label').class('pitch-label').text(`Pitch: ${pitch}`).get())
     el.append($('input').class('pitch').attr('type', 'range')
@@ -54,6 +58,11 @@ export class SoundConfig {
           el.querySelector('svg')!.outerHTML = Octicon.terminal
         }, { capture: true, once: true })
       }).get())
+    el.append($('button').class('remove').icon('trash')
+      .onClick(() => {
+        this.stop()
+        removeSoundConfig(this)
+      }).get())
 
     this.createHowls(sound)
   }
@@ -65,7 +74,6 @@ export class SoundConfig {
     this.el.classList.toggle('loading', this.status === 'loading')
     if (this.status === 'playing') {
       const howl = Math.floor(Math.random() * this.howls.length)
-      console.log('play', howl)
       this.howls[howl].play()
     } else {
       this.howls.forEach(h => h.stop())
@@ -99,19 +107,41 @@ export class SoundConfig {
         rate: this.get('pitch') as number,
       })
       howl.on('end', () => {
-        console.log("stop!")
         if (this.status === 'playing') {
           this.updateStatus('loaded')
         }
       })
-      howl.on('load', () => {
+      const loaded = () => {
         if (this.status === 'loading' &&
             this.howls.every(h => h.state() === 'loaded')) {
           this.updateStatus('loaded')
         }
-      })
+      }
+      if (howl.state() === 'loaded') {
+        setTimeout(() => loaded())
+      } else {
+        howl.on('load', () => {
+          loaded()
+        })
+      }
       this.howls.push(howl)
     }
     this.updateStatus('loading')
+  }
+
+  public getOffset() {
+    return this.get('offset') as number
+  }
+
+  public play() {
+    if (this.status === 'loaded') {
+      this.updateStatus('playing')
+    }
+  }
+
+  public stop() {
+    if (this.status === 'playing') {
+      this.updateStatus('loaded')
+    }
   }
 }
