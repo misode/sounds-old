@@ -56,12 +56,26 @@ async function main() {
     .onClick(() => {
       stopAll()
       sounds.forEach(s => {
-        soundTimeouts.push(setTimeout(() => s.play(), 50 * s.getOffset()))
+        soundTimeouts.push(setTimeout(() => s.play(), 50 * s.getDelay()))
       })
     }).get())
 
   mainControlsEl.append($('button').text('Stop all').icon('mute')
     .onClick(stopAll).get())
+
+  mainControlsEl.append($('button').text('Mcfunction').icon('download')
+    .onClick(() => {
+      const hasDelay = sounds.some(s => s.isValid() && s.getDelay() > 0)
+      const content = sounds
+        .filter(s => s.isValid())
+        .sort((a, b) => a.getDelay() - b.getDelay())
+        .map(s => `${hasDelay ? `execute if score @s delay matches ${s.getDelay()} run ` : ''}${s.getCommand()}`)
+        .join('\n')
+      const download = document.getElementById('download') as HTMLAnchorElement
+      download.setAttribute('href', 'data:text/plain;charset=utf-8,' + content + '%0A')
+      download.setAttribute("download", "sounds.mcfunction")
+      download.click()
+    }).get())
 
   const params: { [key: string]: string } = location.search.slice(1).split('&')
     .map(p => p.split('=')).reduce((acc, p) => ({...acc, [p[0]]: p[1]}), {})

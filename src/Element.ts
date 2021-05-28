@@ -8,7 +8,7 @@ export default (type: string) => {
       return this
     },
     text(v: string) {
-      return this.set('textContent', v)
+      return this.set('textContent', v).set('title', v)
     },
     value(v: string | number) {
       return this.set('value', v)

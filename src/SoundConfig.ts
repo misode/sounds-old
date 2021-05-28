@@ -24,8 +24,8 @@ export class SoundConfig {
         this.createHowls(v)
       }).attr('list', 'sound-list').attr('spellcheck', 'false').value(sound).get())
 
-    el.append($('label').class('offset-label').text('Offset: ').get())
-    el.append($('input').class('offset').attr('type', 'number')
+    el.append($('label').class('delay-label').text('Delay: ').get())
+    el.append($('input').class('delay').attr('type', 'number')
       .attr('min', '0').value(0).get())
 
     el.append($('label').class('pitch-label').text(`Pitch: ${pitch}`).get())
@@ -44,7 +44,7 @@ export class SoundConfig {
 
     el.append($('button').class('copy').text('Copy').icon('terminal')
       .onClick(el => {
-        const command = `/playsound minecraft:${this.get('sound')} master @s ~ ~ ~ ${this.get('pitch')} ${this.get('volume')}`
+        const command = `/${this.getCommand()}`
         el.setAttribute('data-command', command)
         const commandEl = document.createElement('input')
         el.append(commandEl)
@@ -129,8 +129,8 @@ export class SoundConfig {
     this.updateStatus('loading')
   }
 
-  public getOffset() {
-    return this.get('offset') as number
+  public getDelay() {
+    return this.get('delay') as number
   }
 
   public play() {
@@ -143,5 +143,13 @@ export class SoundConfig {
     if (this.status === 'playing') {
       this.updateStatus('loaded')
     }
+  }
+
+  public isValid() {
+    return this.status !== 'loading' && this.howls.length > 0
+  }
+
+  public getCommand() {
+    return `playsound minecraft:${this.get('sound')} master @s ~ ~ ~ ${this.get('pitch')} ${this.get('volume')}`
   }
 }

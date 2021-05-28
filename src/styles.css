@@ -265,25 +265,26 @@ input[type=range]:focus::-moz-range-track {
   color: var(--invalid-text);
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 720px) {
   button {
     padding: 8px 10px;
+    font-size: 0;
   }
 
-  button:not(.remove) > svg {
-    display: none;
+  button::after {
+    font-size: initial;
   }
 
   .sound-config {
-    grid-template-columns: min-content min-content 1fr min-content 1fr min-content min-content;
+    grid-template-columns: min-content min-content 1fr min-content 1fr min-content;
     grid-template-areas:
-      "play sound sound sound sound copy copy"
-      "pitch-label pitch-label pitch volume-label volume volume remove";
+      "play sound sound sound sound copy"
+      "pitch-label pitch-label pitch volume-label volume remove";
   }
   .sound-config .play { grid-area: play; }
   .sound-config .sound { grid-area: sound; }
-  .sound-config .offset-label { display: none; }
-  .sound-config .offset { display: none; }
+  .sound-config .delay-label { display: none; }
+  .sound-config .delay { display: none; }
   .sound-config .pitch-label { grid-area: pitch-label; }
   .sound-config .pitch { grid-area: pitch; }
   .sound-config .volume-label { grid-area: volume-label; }
