@@ -150,6 +150,6 @@ export class SoundConfig {
   }
 
   public getCommand() {
-    return `playsound minecraft:${this.get('sound')} master @s ~ ~ ~ ${this.get('pitch')} ${this.get('volume')}`
+    return `playsound minecraft:${this.get('sound')} master @s ~ ~ ~ ${this.get('volume')} ${this.get('pitch')}`
   }
 }
